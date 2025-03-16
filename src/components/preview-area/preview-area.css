@@ -1,0 +1,51 @@
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-error {
+    text-align: center;
+    padding: 1.5rem;
+    border: 2px solid rgb(239, 68, 68);
+    border-radius: 16px;
+    justify-content: center;
+    color: rgb(239, 68, 68);
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.preview-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-content {
+    border: 1px dashed #ccc;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    min-height: 200px;
+    max-height: 400px;
+    background: 
+    /* Горизонтальные линии */
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 19px, /* Расстояние между линиями минус толщина линии */
+      #ccc 19px,
+      #ccc 20px /* Толщина линии 1px */
+    ),
+    /* Вертикальные линии */
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent 19px,
+      #ccc 19px,
+      #ccc 20px
+    );
+}
+
+.preview-buttons {
+    display: flex;
+    gap: 8px;
+}

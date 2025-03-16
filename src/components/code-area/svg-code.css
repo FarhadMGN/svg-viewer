@@ -1,0 +1,27 @@
+.code-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.code-wrapper {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    font-size: .875rem;
+    line-height: 1.25rem;
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+    position: relative;
+}
+
+.cm-editor {
+    min-height: 200px;
+    max-height: 400px;
+    border-radius: 16px;
+    overflow: hidden;
+}
