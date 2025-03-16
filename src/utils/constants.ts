@@ -53,3 +53,6 @@ export const SVG_STUB = `<svg width="400px" height="400px" viewBox="0 0 512 512"
 <g id="Layer_1"/>
 
 </svg>`
+
+export const UNINSTALL_LINK = 'uninstall-link'// todo fill the link
+export const SERVER_URL = 'uninstall-link'// todo fill the server url

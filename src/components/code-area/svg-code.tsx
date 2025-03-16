@@ -34,11 +34,11 @@ export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
       lineHeight: '1.6',
     },
     '.cm-activeLineGutter': {
-      backgroundColor: 'rgba(66, 133, 244, 0.1)',
+      backgroundColor: 'rgba(66, 133, 244, 0.1)',// todo change color
     },
     '.cm-gutters': {
       backgroundColor: '#0d1117',
-      color: '#636e7b',
+      color: '#636e7b',// todo change color
       border: 'none',
     },
   });
@@ -55,13 +55,16 @@ export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
     width: 1,
   });
 
+  // @ts-ignore
   const handleFileUpload = (event) => {
     try {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
+  // @ts-ignore
           const svgContent = e.target.result;
+  // @ts-ignore
           const sanitizedSvg = DOMPurify.sanitize(svgContent, {
             USE_PROFILES: { svg: true },
             FORBID_TAGS: ['script'],

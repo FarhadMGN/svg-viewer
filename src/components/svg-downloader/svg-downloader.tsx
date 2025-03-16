@@ -35,6 +35,7 @@ const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }
       variant="contained"
       startIcon={<DownloadIcon />}
       onClick={handleDownload}
+  // @ts-ignore
       disabled={svgContent.trim() === '' || error?.length && error.length > 0}
     >
       Download Result

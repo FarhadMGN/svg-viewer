@@ -111,9 +111,11 @@ export const PreviewArea = ({code}: PreviewAreaProps) => {
                     </IconButton>
                   </Tooltip>
                   <SvgDownloader svgContent={code} error={error}/>
+                  {/* todo: backgound color toggler */}
                 </div>
             </div>
             <div className={error ? "preview-error" : "preview-content"}>
+              {/* todo: support multiple icons */}
                 <div 
                     ref={containerRef} 
                     className="preview-icon"

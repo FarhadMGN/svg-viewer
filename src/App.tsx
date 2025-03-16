@@ -26,7 +26,6 @@ function App() {
       <div className='app-content'>
         <CodeEditor value={value} onChange={(value: string): void => {
             // throw new Error('Function not implemented.')
-            console.log(value)
             setValue(value)
           } }></CodeEditor>
         <PreviewArea code={value}/>
