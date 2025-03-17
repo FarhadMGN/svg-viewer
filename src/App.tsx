@@ -9,6 +9,11 @@ import { createTheme, ThemeProvider } from '@mui/material'
 
 function App() {
   const [value, setValue] = useState(SVG_STUB)
+  const [error, setError] = useState<string | null>(null)
+  const updateCode = (code: string) => {
+    setError(null);
+    setValue(code);
+  } 
   const theme = createTheme({
     palette: {
       primary: {
@@ -24,11 +29,11 @@ function App() {
     <ThemeProvider theme={theme}>
     <div className='app-wrapper'>
       <div className='app-content'>
-        <CodeEditor value={value} onChange={(value: string): void => {
-            // throw new Error('Function not implemented.')
-            setValue(value)
-          } }></CodeEditor>
-        <PreviewArea code={value}/>
+        <CodeEditor 
+          value={value} 
+          onChange={(value: string): void => {updateCode(value)}}
+          onError={(error: string | null): void => {setError(error)}}></CodeEditor>
+        <PreviewArea code={value} errorString={error}/>
       </div>
 
       <RatingWidget/>

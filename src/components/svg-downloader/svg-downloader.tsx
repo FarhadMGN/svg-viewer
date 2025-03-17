@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 
 interface SvgDownloaderProps {
@@ -31,6 +31,7 @@ const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }
   };
 
   return (
+    
     <Button
       variant="contained"
       startIcon={<DownloadIcon />}
@@ -40,6 +41,12 @@ const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }
     >
       Download Result
     </Button>
+    // <Tooltip title={'Download .svg file'}>
+    // {/* todo remove outline */}
+    //   <IconButton onClick={handleDownload} >
+    //     <DownloadIcon fontSize="small" />
+    //   </IconButton>
+    // </Tooltip>
   );
 };
 

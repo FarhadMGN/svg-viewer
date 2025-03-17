@@ -10,9 +10,10 @@ import DOMPurify from 'dompurify';
 interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
+  onError: (error: string | null) => void;
 }
 
-export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
+export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
   const handleChange = (val: string) => {
     onChange(val);
   };
@@ -76,17 +77,18 @@ export const CodeEditor = ({ value, onChange }: CodeEditorProps) => {
           const parseError = svgDoc.querySelector('parsererror');
           if (parseError) {
             console.error('Ошибка в SVG:', parseError.textContent);
-            // todo: set error
+            onError(parseError.textContent);
+            handleChange(sanitizedSvg)
           } else {
-            console.log('Валидный и очищенный SVG:', sanitizedSvg);
-            onChange(sanitizedSvg);
+            handleChange(sanitizedSvg);
           }
         };
         reader.readAsText(file);
+      } else {
+        throw new Error('No file selected');
       }
     } catch (e) {
-      // todo: set error
-      console.error('Ошибка в SVG:', e);
+      onError(e instanceof Error ? e.message : "Can not parse svg file");
     }
   };
 

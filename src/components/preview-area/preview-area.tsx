@@ -1,23 +1,39 @@
 import { useEffect, useRef, useState } from "react";
 import './preview-area.css'
 import SvgDownloader from "../svg-downloader/svg-downloader";
-import { IconButton, Tooltip } from "@mui/material";
-import { ContentCopy } from "@mui/icons-material";
+import { IconButton, Slider, Tooltip } from "@mui/material";
+import { ContentCopy, Close, Menu, Colorize } from "@mui/icons-material";
 import useToolTipCopyText from "../hooks/copyTooltip.hook";
 
 
 interface PreviewAreaProps {
     code: string;
+    errorString: string | null;
   }
 
-export const PreviewArea = ({code}: PreviewAreaProps) => {
+export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {  
     const containerRef = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const [text, changeText] = useToolTipCopyText();
-    // todo: implement zooming
+    const [color, setColor] = useState('#C9CFD4');
+    const [zoom, setZoom] = useState(100);
+
+    const inputRef = useRef(null);
+
+    const handleIconClick = () => {
+      if (inputRef.current) {
+        inputRef.current.click(); // Программно вызываем клик на скрытом input
+      }
+    };
+
+    useEffect(() => {
+      setError(errorString);
+    }, [errorString]);
   
     useEffect(() => {
       if (!containerRef.current) return;
@@ -39,7 +55,7 @@ export const PreviewArea = ({code}: PreviewAreaProps) => {
         const svgElement = doc.documentElement;
         
         // transitions styles
-        svgElement.style.transform = `translate(${position.x}px, ${position.y}px)`;
+        svgElement.style.transform = `scale(${zoom / 100}) translate(${position.x}px, ${position.y}px)`;
         svgElement.style.transformOrigin = 'center';
         svgElement.style.transition = 'transform 0.2s ease-out';
         
@@ -52,7 +68,7 @@ export const PreviewArea = ({code}: PreviewAreaProps) => {
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Unknown error');
       }
-    }, [code, position]);
+    }, [code, position, zoom]);
   
     const handleMouseDown = (e: React.MouseEvent) => {
       setIsDragging(true);
@@ -98,24 +114,23 @@ export const PreviewArea = ({code}: PreviewAreaProps) => {
       navigator.clipboard.writeText(code);
       changeText();
     };
+
+    const handleChange = (_e: Event, value: number, _active: number) => {
+      setZoom(value)
+    }
   
     return (
         <div className="preview-wrapper">
             <div className="preview-header">
                 <h2>SVG Preview</h2>
-                <div className="preview-buttons">
-                  {/* todo remove outline */}
-                  <Tooltip title={text}>
-                    <IconButton onClick={handleCopy} >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <SvgDownloader svgContent={code} error={error}/>
-                  {/* todo: backgound color toggler */}
-                </div>
             </div>
-            <div className={error ? "preview-error" : "preview-content"}>
-              {/* todo: support multiple icons */}
+            {(
+              <div className="preview-content"
+                style={{ 
+                    background: error ? 'rgba(239, 68, 68, 0.1)' : color,
+                    display: error ? 'none' : 'block',
+                }}
+              >
                 <div 
                     ref={containerRef} 
                     className="preview-icon"
@@ -133,14 +148,78 @@ export const PreviewArea = ({code}: PreviewAreaProps) => {
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                 ></div>
-                
-                {error && (
-                    <div className="svg-error">
-                        <p>SVG Parsing Error</p>
-                        <div>{error}</div>
+                <div className="hamburger">
+                  <IconButton onClick={() => setIsSidebarOpen(true)} >
+                    <Menu fontSize="small" />
+                  </IconButton>
+                </div>
+
+                {/* Сайдбар */}
+                <div
+                  className="sidebar"
+                  style={{
+                    transform: isSidebarOpen ? 'translateX(0)' : 'translateX(100%)', // Логика показа/скрытия
+                  }}
+                >
+                  <div className="preview-close">
+                    <IconButton onClick={() => setIsSidebarOpen(false)} >
+                      <Close fontSize="small" />
+                    </IconButton>
+                  </div>
+                  <div className="preview-buttons">
+                    <div>
+                      <div>Zoom:</div>
+                        <Slider
+                          style={{
+                            width: '100%'
+                          }}
+                          aria-label="Zoom"
+                          value={zoom}
+                          onChange={handleChange}
+                          valueLabelDisplay="auto"
+                          min={10}
+                          max={300}
+                        />
                     </div>
-                )}
-            </div>
+                    <div>
+                      <div>Change background:</div>
+                        <input
+                          type="color"
+                          ref={inputRef}
+                          value={color}
+                          onChange={(event) => setColor(event.target.value)}
+                          style={{ 
+                            opacity: 0,
+                            width: 0,
+                            padding: 0
+                          }}
+                        />
+                        <IconButton onClick={handleIconClick}>
+                          <Colorize />
+                        </IconButton>
+                      </div>
+                    <div className="sidebar-actions">
+                          
+                      <Tooltip title={text}>
+                      {/* todo remove outline */}
+                        <IconButton onClick={handleCopy} >
+                          <ContentCopy fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <SvgDownloader svgContent={code} error={error}/>
+                    </div>
+                        
+                  </div>
+                </div>
+              </div>
+            )}
+            {error && (<div className="preview-error">
+                <div className="svg-error">
+                    <p>SVG Parsing Error</p>
+                    <div>{error}</div>
+                </div>
+              </div>
+            )}
       </div>
     );
 };
