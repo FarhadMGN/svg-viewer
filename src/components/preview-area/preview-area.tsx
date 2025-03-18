@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import './preview-area.css'
 import SvgDownloader from "../svg-downloader/svg-downloader";
 import { IconButton, Slider, Tooltip } from "@mui/material";
-import { ContentCopy, Close, Menu, Colorize } from "@mui/icons-material";
+import { ContentCopy, Close, Menu, Colorize, Fullscreen, FullscreenExit } from "@mui/icons-material";
 import useToolTipCopyText from "../hooks/copyTooltip.hook";
 
 
@@ -22,6 +22,7 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
     const [text, changeText] = useToolTipCopyText();
     const [color, setColor] = useState('#C9CFD4');
     const [zoom, setZoom] = useState(100);
+    const [isFullScreen, setFullScreen] = useState(false);
 
     const inputRef = useRef(null);
 
@@ -123,9 +124,18 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
         <div className="preview-wrapper">
             <div className="preview-header">
                 <h2>SVG Preview</h2>
+                <div className="sidebar-actions">
+                      <Tooltip title={text}>
+                      {/* todo remove outline */}
+                        <IconButton onClick={handleCopy} >
+                          <ContentCopy fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <SvgDownloader svgContent={code} error={error}/>
+                    </div>
             </div>
             {(
-              <div className="preview-content"
+              <div className={isFullScreen ? "preview-content-full" : "preview-content"}
                 style={{ 
                     background: error ? 'rgba(239, 68, 68, 0.1)' : color,
                     display: error ? 'none' : 'block',
@@ -198,15 +208,16 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                           <Colorize />
                         </IconButton>
                       </div>
-                    <div className="sidebar-actions">
-                          
-                      <Tooltip title={text}>
-                      {/* todo remove outline */}
-                        <IconButton onClick={handleCopy} >
-                          <ContentCopy fontSize="small" />
+                    
+                    <div className="sidebar-fullscreen">
+                      <Tooltip title={isFullScreen ? 'Exit fullscreen' :'Go to fullscreen'}>
+                        <IconButton onClick={() => setFullScreen(!isFullScreen)} >
+                          {isFullScreen ? 
+                            <FullscreenExit/>: 
+                            <Fullscreen/>
+                          }
                         </IconButton>
                       </Tooltip>
-                      <SvgDownloader svgContent={code} error={error}/>
                     </div>
                         
                   </div>

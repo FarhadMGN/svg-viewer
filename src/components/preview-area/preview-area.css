@@ -20,7 +20,6 @@
 }
 
 .preview-content {
-    border: 1px dashed #ccc;
     border-radius: 16px;
     overflow: hidden;
     position: relative;
@@ -64,4 +63,21 @@
     cursor: pointer;
     background: white;
     border-radius: 50%;
+}
+
+.sidebar-fullscreen {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+}
+
+.preview-content-full {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border-radius: 16px;
+    overflow: hidden;
+    z-index: 200;
 }
