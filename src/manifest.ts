@@ -32,5 +32,15 @@ export default defineManifest({
       matches: [],
     },
   ],
+  content_scripts: [
+    {
+      matches: ['http://*/*', 'https://*/*'],
+      js: ['src/contentScript/content-script.ts'],
+      run_at: 'document_end',
+    },
+  ],
   permissions: ['storage', 'sidePanel', "activeTab", "scripting"],
+  host_permissions: [
+    "<all_urls>"
+  ]
 })

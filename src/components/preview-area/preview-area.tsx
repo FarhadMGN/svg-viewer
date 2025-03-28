@@ -28,6 +28,7 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
 
     const handleIconClick = () => {
       if (inputRef.current) {
+        // @ts-ignore
         inputRef.current.click(); // Программно вызываем клик на скрытом input
       }
     };
@@ -67,7 +68,7 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
         
         containerRef.current.appendChild(svgElement);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Unknown error');
+        setError(error instanceof Error ? error.message : 'Oops, something went wrong');
       }
     }, [code, position, zoom]);
   
@@ -116,7 +117,9 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
       changeText();
     };
 
-    const handleChange = (_e: Event, value: number, _active: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleChange = (_e: Event, value: number | number[], _active: number) => {
+      if (Array.isArray(value)) return
       setZoom(value)
     }
   
