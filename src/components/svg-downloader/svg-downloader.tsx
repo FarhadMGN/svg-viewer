@@ -39,7 +39,7 @@ const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }
   // @ts-ignore
       disabled={svgContent.trim() === '' || error?.length && error.length > 0}
     >
-      Download Result
+      Download Svg
     </Button>
     // <Tooltip title={'Download .svg file'}>
     // {/* todo remove outline */}

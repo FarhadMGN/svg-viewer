@@ -5,7 +5,7 @@ import { EditorView } from '@codemirror/view';
 import "./svg-code.css"
 import { Button, styled } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DOMPurify from 'dompurify';
+import { useState } from 'react';
 
 interface CodeEditorProps {
   value: string;
@@ -13,7 +13,15 @@ interface CodeEditorProps {
   onError: (error: string | null) => void;
 }
 
+export interface IconModel {
+  svgCode: string;
+  svgName: string;
+  selected: boolean;
+}
+
 export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
+  const [icons, setIcons] = useState<IconModel[]>([]);
+  const [selectedIcon, setSelectedIcon] = useState<IconModel | null>(null);
   const handleChange = (val: string) => {
     onChange(val);
   };
@@ -57,40 +65,85 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
   });
 
   // @ts-ignore
-  const handleFileUpload = (event) => {
-    try {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-  // @ts-ignore
-          const svgContent = e.target.result;
-  // @ts-ignore
-          const sanitizedSvg = DOMPurify.sanitize(svgContent, {
-            USE_PROFILES: { svg: true },
-            FORBID_TAGS: ['script'],
-            FORBID_ATTR: ['onerror', 'onload'],
-          });
+  const handleFileUpload = async (event) => {
+    const files = event.target.files;
+    const newIcons: IconModel[] = [];
+    let iconCount = 1;
 
-          const parser = new DOMParser();
-          const svgDoc = parser.parseFromString(sanitizedSvg, 'image/svg+xml');
-          const parseError = svgDoc.querySelector('parsererror');
-          if (parseError) {
-            console.error('Ошибка в SVG:', parseError.textContent);
-            onError(parseError.textContent);
-            handleChange(sanitizedSvg)
-          } else {
-            handleChange(sanitizedSvg);
-          }
-        };
-        reader.readAsText(file);
-      } else {
-        throw new Error('No file selected');
+    for (const file of files) {
+      if (file.name.endsWith('.svg')) {
+        try {
+          const svgContent = await readFileContent(file);
+          newIcons.push({
+            svgCode: svgContent,
+            svgName: file.name ?? `icon_${iconCount}`,
+            selected: false
+          });
+          iconCount++;
+        } catch (error) {
+          console.error(`Ошибка при чтении ${file.name}:`, error);
+        }
       }
-    } catch (e) {
-      onError(e instanceof Error ? e.message : "Can not parse svg file");
     }
+
+    setIcons(newIcons);
   };
+
+  // Чтение содержимого файла
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const readFileContent = (file: any): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(e);
+      reader.readAsText(file);
+    });
+  };
+    
+  const clickIcon = (icon: IconModel): void => {
+    if (selectedIcon) {
+      selectedIcon.selected = false;
+    }
+    icon.selected = true
+    setSelectedIcon(icon)
+    
+    onChange(icon.svgCode)
+  }
+
+  //   {
+  //   try {
+  //     const file = event.target.files[0];
+  //     if (file) {
+  //       const reader = new FileReader();
+  //       reader.onload = (e) => {
+  // // @ts-ignore
+  //         const svgContent = e.target.result;
+  // // @ts-ignore
+  //         const sanitizedSvg = DOMPurify.sanitize(svgContent, {
+  //           USE_PROFILES: { svg: true },
+  //           FORBID_TAGS: ['script'],
+  //           FORBID_ATTR: ['onerror', 'onload'],
+  //         });
+
+  //         const parser = new DOMParser();
+  //         const svgDoc = parser.parseFromString(sanitizedSvg, 'image/svg+xml');
+  //         const parseError = svgDoc.querySelector('parsererror');
+  //         if (parseError) {
+  //           console.error('Ошибка в SVG:', parseError.textContent);
+  //           onError(parseError.textContent);
+  //           handleChange(sanitizedSvg)
+  //         } else {
+  //           handleChange(sanitizedSvg);
+  //         }
+  //       };
+  //       reader.readAsText(file);
+  //     } else {
+  //       throw new Error('No file selected');
+  //     }
+  //   } catch (e) {
+  //     onError(e instanceof Error ? e.message : "Can not parse svg file");
+  //   }
+  // };
 
   return (
     <div className='code-area'>
@@ -103,16 +156,33 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
           tabIndex={-1}
           startIcon={<CloudUploadIcon />}
         >
-          Upload .svg file
+          Upload files
           <VisuallyHiddenInput
             accept=".svg"
             type="file"
-            onChange={handleFileUpload}
+            webkitdirectory="true"
+            directory=""
             multiple
+            onChange={handleFileUpload}
           />
         </Button>
       </div>
       <div className="code-wrapper">
+        {icons?.length > 0 && <div className='svgs'>
+        {icons.map((icon, index) => (
+          <div
+            key={index}
+            className={`icon-item  ${icon.selected ? 'selected' : ''}`}
+            onClick={() => clickIcon(icon)}
+          >
+            <div
+              className="icon-preview"
+              dangerouslySetInnerHTML={{ __html: icon.svgCode }}
+            />
+            <div className="icon-label">{icon.svgName}</div>
+          </div>
+        ))}
+        </div>}
         <CodeMirror
           value={value}
           height="100%"
