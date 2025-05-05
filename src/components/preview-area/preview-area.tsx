@@ -44,28 +44,45 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
       setError(null);
       
       try {
-        // parsing
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(code, 'image/svg+xml');
-        
         const parserError = doc.querySelector('parsererror');
         if (parserError) {
-          setError(parserError.textContent || 'SVG parsing error');
+          setError('Invalid SVG: ' + (parserError.textContent || 'SVG parsing error'));
           return;
         }
-        
-        const svgElement = doc.documentElement;
-        
-        // transitions styles
-        svgElement.style.transform = `scale(${zoom / 100}) translate(${position.x}px, ${position.y}px)`;
+  
+        // Если SVG валиден, извлекаем корневой элемент
+        const tempSvg = doc.documentElement;
+        if (tempSvg.tagName.toLowerCase() !== 'svg') {
+          setError('Invalid SVG: root element is not <svg>');
+          return;
+        }
+  
+        // Создаём новый элемент <svg> с правильным пространством имён
+        const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  
+        // Копируем атрибуты из распарсенного SVG
+        for (const attr of tempSvg.attributes) {
+          svgElement.setAttribute(attr.name, attr.value);
+        }
+  
+        // Переносим содержимое (например, <path>) в новый элемент
+        svgElement.innerHTML = tempSvg.innerHTML;
+  
+        // Применяем стили
+        svgElement.style.transform = `scale(${zoom / 100})`;
         svgElement.style.transformOrigin = 'center';
+        svgElement.style.left = `${position.x}px`;
+        svgElement.style.top = `${position.y}px`;
+        svgElement.style.position = 'relative';
         svgElement.style.transition = 'transform 0.2s ease-out';
-        
         // svgElement.style.filter = 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.1))';
-        
         svgElement.style.maxWidth = 'none';
         svgElement.style.maxHeight = 'none';
-        
+  
+        // Вставляем элемент в контейнер
         containerRef.current.appendChild(svgElement);
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Oops, something went wrong');
@@ -88,29 +105,7 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
     const handleMouseUp = () => {
       setIsDragging(false);
     };
-  
-    const handleTouchStart = (e: React.TouchEvent) => {
-      if (e.touches.length === 1) {
-        setIsDragging(true);
-        setStartPos({ 
-          x: e.touches[0].clientX - position.x, 
-          y: e.touches[0].clientY - position.y 
-        });
-      }
-    };
-  
-    const handleTouchMove = (e: React.TouchEvent) => {
-      if (!isDragging || e.touches.length !== 1) return;
-      e.preventDefault();
-      setPosition({
-        x: e.touches[0].clientX - startPos.x,
-        y: e.touches[0].clientY - startPos.y
-      });
-    };
-  
-    const handleTouchEnd = () => {
-      setIsDragging(false);
-    };
+
 
     const handleCopy = () => {
       navigator.clipboard.writeText(code);
@@ -137,7 +132,6 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                       <SvgDownloader svgContent={code} error={error}/>
                     </div>
             </div>
-            {(
               <div className={isFullScreen ? "preview-content-full" : "preview-content"}
                 style={{ 
                     background: error ? 'rgba(239, 68, 68, 0.1)' : color,
@@ -157,9 +151,6 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                     onMouseUp={handleMouseUp}
                     onMouseDown={handleMouseDown}
                     onMouseLeave={handleMouseUp}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
                 ></div>
                 <div className="hamburger">
                   <IconButton onClick={() => setIsSidebarOpen(true)} >
@@ -226,7 +217,6 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                   </div>
                 </div>
               </div>
-            )}
             {error && (<div className="preview-error">
                 <div className="svg-error">
                     <p>SVG Parsing Error</p>

@@ -1,32 +1,22 @@
-import { useState } from "react";
+import { Button } from "@mui/material";
 
 // Пример использования в компоненте
 const SvgInspectorButton = () => {
-    const [isActive, setIsActive] = useState(false)
 
     const sender = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             console.log('tabs >> ', tabs);
-            const event = isActive ? 'deactivate' : 'activate'
+            const event = 'activate'
             chrome.tabs.sendMessage(tabs?.[0]?.id || 0, { action: event });
-            setIsActive(!isActive);
         });
     }
   
     return (
-      <button 
+      <Button 
         onClick={sender}
-        style={{
-          padding: '8px 16px',
-          background: isActive ? '#ff4444' : '#4CAF50',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
       >
-        {isActive ? 'Deactivate SVG Inspector' : 'Activate SVG Inspector'}
-      </button>
+        pick from current site
+      </Button>
     );
   };
   
