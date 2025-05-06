@@ -9,16 +9,17 @@ import useToolTipCopyText from "../hooks/copyTooltip.hook";
 interface PreviewAreaProps {
     code: string;
     errorString: string | null;
+    pos: { x: number, y: number }
   }
 
-export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {  
+export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {  
     const containerRef = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<string | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState(pos);
     const [isDragging, setIsDragging] = useState(false);
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+    const [startPos, setStartPos] = useState(pos);
     const [text, changeText] = useToolTipCopyText();
     const [color, setColor] = useState('#C9CFD4');
     const [zoom, setZoom] = useState(100);
@@ -36,6 +37,12 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
     useEffect(() => {
       setError(errorString);
     }, [errorString]);
+
+    useEffect(() => {
+      setPosition(pos);
+      setStartPos(pos);
+      setZoom(100);
+    }, [pos]);
   
     useEffect(() => {
       if (!containerRef.current) return;
@@ -44,7 +51,6 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
       setError(null);
       
       try {
-
         const parser = new DOMParser();
         const doc = parser.parseFromString(code, 'image/svg+xml');
         const parserError = doc.querySelector('parsererror');
@@ -162,7 +168,7 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                 <div
                   className="sidebar"
                   style={{
-                    transform: isSidebarOpen ? 'translateX(0)' : 'translateX(100%)', // Логика показа/скрытия
+                    transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)', // Логика показа/скрытия
                   }}
                 >
                   <div className="preview-close">
@@ -202,8 +208,9 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                           <Colorize />
                         </IconButton>
                       </div>
-                    
-                    <div className="sidebar-fullscreen">
+                  </div>
+                </div>
+                <div className="sidebar-fullscreen">
                       <Tooltip title={isFullScreen ? 'Exit fullscreen' :'Go to fullscreen'}>
                         <IconButton onClick={() => setFullScreen(!isFullScreen)} >
                           {isFullScreen ? 
@@ -213,9 +220,6 @@ export const PreviewArea = ({code, errorString}: PreviewAreaProps) => {
                         </IconButton>
                       </Tooltip>
                     </div>
-                        
-                  </div>
-                </div>
               </div>
             {error && (<div className="preview-error">
                 <div className="svg-error">

@@ -93,6 +93,7 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
     const files = event.target.files;
     const newIcons: IconModel[] = [];
     let iconCount = 1;
+    let firstIconSetted = false;
 
     for (const file of files) {
       if (file.name.endsWith('.svg')) {
@@ -104,6 +105,10 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
             selected: false
           });
           iconCount++;
+          if (!firstIconSetted) {
+            firstIconSetted = true;
+            clickIcon(newIcons[0])
+          }
         } catch (error) {
           onError(`Ошибка при чтении ${file.name}:`)//todo: delete this sheet
           console.error(`Ошибка при чтении ${file.name}:`, error);
@@ -119,7 +124,7 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
   const readFileContent = (file: any): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-  // @ts-ignore
+      // @ts-ignore
       reader.onload = (e) => resolve(e.target.result);
       reader.onerror = (e) => reject(e);
       reader.readAsText(file);
@@ -151,7 +156,7 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
           <VisuallyHiddenInput
             accept=".svg"
             type="file"
-  // @ts-ignore
+            // @ts-ignore
             webkitdirectory="true"
             directory=""
             multiple
@@ -160,7 +165,7 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
         </Button>
       </div>
       <div className="code-wrapper">
-        {icons?.length > 0 && <div className='svgs'>
+        {icons?.length > 1 && <div className='svgs'>
         {icons.map((icon, index) => (
           <div
             key={index}

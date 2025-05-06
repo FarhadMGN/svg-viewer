@@ -12,10 +12,13 @@ import { createTheme, ThemeProvider } from '@mui/material'
 function App() {
   const [value, setValue] = useState(SVG_STUB)
   const [error, setError] = useState<string | null>(null)
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+
   // const [isChrome] = useState(isChromeExtension())
   const updateCode = (code: string) => {
     setError(null);
     setValue(code);
+    setPos({ x: 200, y: 200 })
   }
 
   const theme = createTheme({
@@ -38,7 +41,7 @@ function App() {
           value={value} 
           onChange={(value: string): void => {updateCode(value)}}
           onError={(error: string | null): void => {setError(error)}}></CodeEditor>
-        <PreviewArea code={value} errorString={error}/>
+        <PreviewArea code={value} errorString={error} pos={pos}/>
       </div>
 
       <RatingWidget/>
