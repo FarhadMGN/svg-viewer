@@ -5,10 +5,11 @@ import { EditorView } from '@codemirror/view';
 import "./svg-code.css"
 import { Button, styled } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface CodeEditorProps {
   value: string;
+  files: any[];
   onChange: (value: string) => void;
   onError: (error: string | null) => void;
 }
@@ -19,12 +20,17 @@ export interface IconModel {
   selected: boolean;
 }
 
-export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
+export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps) => {
   const [icons, setIcons] = useState<IconModel[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<IconModel | null>(null);
+
   const handleChange = (val: string) => {
     onChange(val);
   };
+
+  useEffect(() => {
+    handleFileUpload(files)
+  }, [files])
 
   // const [isChrome] = useState(isChromeExtension())
   
@@ -90,7 +96,7 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
 
   // @ts-ignore
   const handleFileUpload = async (event) => {
-    const files = event.target.files;
+    const files = event;
     const newIcons: IconModel[] = [];
     let iconCount = 1;
     let firstIconSetted = false;
@@ -160,7 +166,7 @@ export const CodeEditor = ({ value, onChange, onError }: CodeEditorProps) => {
             webkitdirectory="true"
             directory=""
             multiple
-            onChange={handleFileUpload}
+            onChange={(e) => handleFileUpload(e.target.files)}
           />
         </Button>
       </div>

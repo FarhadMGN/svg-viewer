@@ -3,13 +3,12 @@ import './preview-area.css'
 import SvgDownloader from "../svg-downloader/svg-downloader";
 import { IconButton, Slider, Tooltip } from "@mui/material";
 import { ContentCopy, Close, Menu, Colorize, Fullscreen, FullscreenExit } from "@mui/icons-material";
-import useToolTipCopyText from "../hooks/copyTooltip.hook";
 
 
 interface PreviewAreaProps {
     code: string;
     errorString: string | null;
-    pos: { x: number, y: number }
+    pos: { x: number, y: number };
   }
 
 export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {  
@@ -20,7 +19,6 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
     const [position, setPosition] = useState(pos);
     const [isDragging, setIsDragging] = useState(false);
     const [startPos, setStartPos] = useState(pos);
-    const [text, changeText] = useToolTipCopyText();
     const [color, setColor] = useState('#C9CFD4');
     const [zoom, setZoom] = useState(100);
     const [isFullScreen, setFullScreen] = useState(false);
@@ -115,7 +113,6 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
 
     const handleCopy = () => {
       navigator.clipboard.writeText(code);
-      changeText();
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -129,7 +126,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
             <div className="preview-header">
                 <h2>SVG Preview</h2>
                 <div className="sidebar-actions">
-                      <Tooltip title={text}>
+                      <Tooltip title={'Copy current svg code'}>
                       {/* todo remove outline */}
                         <IconButton onClick={handleCopy} >
                           <ContentCopy fontSize="small" />

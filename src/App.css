@@ -14,3 +14,23 @@
   min-width: 320px;
   padding-right: 24px;
 }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  pointer-events: auto;
+  /* border: #fff 8px dashed; */
+}
+.overlay-text {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+}

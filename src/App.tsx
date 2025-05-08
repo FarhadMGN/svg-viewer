@@ -13,6 +13,9 @@ function App() {
   const [value, setValue] = useState(SVG_STUB)
   const [error, setError] = useState<string | null>(null)
   const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [dragActive, setDragActive] = useState(false);
+  const [files, setFiles] = useState<any[]>([]);
+
 
   // const [isChrome] = useState(isChromeExtension())
   const updateCode = (code: string) => {
@@ -32,20 +35,62 @@ function App() {
     },
   });
 
+  const handleDrag = (e) => {
+    console.log('handle drag');
+    
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    console.log('handle drop');
+    
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      console.log('here!!', e.dataTransfer.files);
+      
+      setFiles(e.dataTransfer.files);
+    }
+    setDragActive(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
-    <div className='app-wrapper'>
-      {/* {isChrome && <SvgInspectorButton />} */}
-      <div className='app-content'>
-        <CodeEditor 
-          value={value} 
-          onChange={(value: string): void => {updateCode(value)}}
-          onError={(error: string | null): void => {setError(error)}}></CodeEditor>
-        <PreviewArea code={value} errorString={error} pos={pos}/>
-      </div>
+      {dragActive && (
+        <div
+          className="overlay"
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
+          <div className="overlay-text">Drop files here</div>
+        </div>
+      )}
+      <div className='app-wrapper'
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        >
+        {/* {isChrome && <SvgInspectorButton />} */}
+        <div className='app-content'>
+          <CodeEditor 
+            value={value}
+            files={files}
+            onChange={(value: string): void => {updateCode(value)}}
+            onError={(error: string | null): void => {setError(error)}}></CodeEditor>
+          <PreviewArea code={value} errorString={error} pos={pos} />
+        </div>
 
-      <RatingWidget/>
-    </div>
+        <RatingWidget/>
+      </div>
     </ThemeProvider>
   )
 }
