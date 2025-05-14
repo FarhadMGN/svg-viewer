@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createTheme, Rating, Stack, ThemeProvider, Typography } from '@mui/material'
 import { storageGet, storageSet } from '../../utils/localStorage'
+import en from '../../assets/locales/en.json'
 
 export const RATING_KEY = 'app_rating_score'
 
@@ -38,7 +39,7 @@ const RatingWidget = () => {
   return (<>
     <Stack direction={'row'} className="rating-widget" justifyContent={'center'} alignItems={'center'}
            paddingTop={'3px'}>
-      <Typography variant={'body2'} sx={{ marginRight: '5px' }}>{'Rate us now!'}</Typography>
+      <Typography variant={'body2'} sx={{ marginRight: '5px' }}>{en.rateUs}</Typography>
       <ThemeProvider theme={themeRating}>
         <Rating
           name="size-small"

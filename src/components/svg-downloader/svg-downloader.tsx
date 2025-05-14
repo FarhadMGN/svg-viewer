@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import en from '../../assets/locales/en.json'
 
 interface SvgDownloaderProps {
     svgContent: string;
@@ -39,7 +40,7 @@ const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }
   // @ts-ignore
       disabled={svgContent.trim() === '' || error?.length && error.length > 0}
     >
-      Download Current Svg
+      {en.previewArea.downloadBtn}
     </Button>
     // <Tooltip title={'Download .svg file'}>
     // {/* todo remove outline */}

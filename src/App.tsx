@@ -6,6 +6,7 @@ import { PreviewArea } from './components/preview-area/preview-area'
 import { SVG_STUB } from './utils/constants'
 import RatingWidget from './components/rating/rating-widget'
 import { createTheme, ThemeProvider } from '@mui/material'
+import en from './assets/locales/en.json'
 // import SvgInspectorButton from './components/svg-picker/svg-picker'
 // import { isChromeExtension } from './utils/utils'
 
@@ -53,8 +54,6 @@ function App() {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      console.log('here!!', e.dataTransfer.files);
-      
       setFiles(e.dataTransfer.files);
     }
     setDragActive(false);
@@ -70,7 +69,7 @@ function App() {
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          <div className="overlay-text">Drop files here</div>
+          <div className="overlay-text">{en.dragNDrop}</div>
         </div>
       )}
       <div className='app-wrapper'

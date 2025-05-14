@@ -8,6 +8,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useEffect, useState } from 'react';
 import { storageGet, storageSet } from '../../utils/localStorage';
 import { STORAGE_NEED_TO_SHOW_SWITCH_DIALOG } from '../../utils/constants';
+import en from '../../assets/locales/en.json'
 
 interface CodeEditorProps {
   value: string;
@@ -27,7 +28,7 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
   const [selectedIcon, setSelectedIcon] = useState<IconModel | null>(null);
   const [nextIcon, setNextIcon] = useState<IconModel | null>(null);
   const [codeWasChanged, setCodeWasChanged] = useState<boolean>(false);
-  const [dialogOpened, setDialogOpened] = useState<boolean>(false);
+  const [dialogOpened, setDialogOpened] = useState<boolean>(true);
 
   useEffect(() => {
     handleFileUpload(files)
@@ -130,8 +131,8 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
             clickIcon(newIcons[0])
           }
         } catch (error) {
-          onError(`Ошибка при чтении ${file.name}:`)//todo: delete this sheet
-          console.error(`Ошибка при чтении ${file.name}:`, error);
+          onError(`Something went wrong with ${file.name}:`)//todo: delete this sheet
+          console.error(`Something went wrong with ${file.name}:`, error);
         }
       }
     }
@@ -191,7 +192,7 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
   return (
     <div className='code-area'>
       <div className='code-header'>
-        <h2>SVG Code</h2>
+        <h2>{en.codeArea.title}</h2>
         <Button
           component="label"
           role={undefined}
@@ -199,7 +200,7 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
           tabIndex={-1}
           startIcon={<CloudUploadIcon />}
         >
-          Upload files
+          {en.codeArea.uploadBtn}
           <VisuallyHiddenInput
             accept=".svg"
             type="file"
@@ -253,23 +254,23 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
             closeBrackets: true,
             rectangularSelection: true,
           }}
-          placeholder="Paste SVG code here, upload file via button or drop .svg file here"
+          placeholder={en.codeArea.codePlaceholder}
         />
       </div>
       <Dialog
         open={dialogOpened}
-        onClose={handleCloseDialog}
+        onClose={stayCurrentIcon}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Are you want to leave from current svg? Unsaved data will be removed"}
+          {en.codeArea.confirmation}
         </DialogTitle>
         <DialogActions>
-          <Button type={"submit"} onClick={switchAnyway} autoFocus>
-            Ok, don't show again
+        <Button type={"submit"} onClick={switchAnyway} variant="contained">
+          {en.codeArea.okDontShowAgain}
           </Button>
-          <Button onClick={stayCurrentIcon}>Stay here</Button>
+          <Button onClick={stayCurrentIcon}>{en.codeArea.cancel}</Button>
         </DialogActions>
       </Dialog>
     </div>

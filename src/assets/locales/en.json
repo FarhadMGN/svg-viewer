@@ -1,0 +1,25 @@
+{
+    "codeArea": {
+        "title": "Source Code",
+        "uploadBtn": "Browse Files",
+        "confirmation": "Are you sure you want to leave? Your unsaved changes will be lost.",
+        "cancel": "Cancel",
+        "codePlaceholder": "Paste SVG code, upload, or drop a file here.",
+        "okDontShowAgain": "Ok, don't show again"
+    },
+    "previewArea": {
+        "title": "Live Preview",
+        "errorTitle": "Invalid SVG Code",
+        "enterFS": "Fullscreen Mode",
+        "exitFS": "Exit Fullscreen",
+        "sideMenu": {
+            "zoom": "Preview Size:",
+            "changeBG": "Preview Background:"
+        },
+        "copyTooltip": "Copy to Clipboard",
+        "notification": "Copied to clipboard!",
+        "downloadBtn": "Download SVG"
+    },
+    "dragNDrop": "Drop SVG files here",
+    "rateUs": "Rate us now!"
+}

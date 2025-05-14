@@ -3,6 +3,7 @@ import './preview-area.css'
 import SvgDownloader from "../svg-downloader/svg-downloader";
 import { IconButton, Slider, Snackbar, SnackbarCloseReason, Tooltip } from "@mui/material";
 import { ContentCopy, Close, Menu, Colorize, Fullscreen, FullscreenExit } from "@mui/icons-material";
+import en from '../../assets/locales/en.json'
 
 
 interface PreviewAreaProps {
@@ -54,14 +55,14 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
         const doc = parser.parseFromString(code, 'image/svg+xml');
         const parserError = doc.querySelector('parsererror');
         if (parserError) {
-          setError('Invalid SVG: ' + (parserError.textContent || 'SVG parsing error'));
+          setError((parserError.textContent || 'SVG parsing error'));
           return;
         }
   
         // Если SVG валиден, извлекаем корневой элемент
         const tempSvg = doc.documentElement;
         if (tempSvg.tagName.toLowerCase() !== 'svg') {
-          setError('Invalid SVG: root element is not <svg>');
+          setError('Root element is not <svg>');// todo: work with  setError, correct error messages
           return;
         }
   
@@ -141,12 +142,12 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
             autoHideDuration={2000}
             onClose={handleCloseNotification}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            message="Current SVG code copied to clipboard!"
+            message={en.previewArea.notification}
           />
             <div className="preview-header">
-                <h2>SVG Preview</h2>
+                <h2>{en.previewArea.title}</h2>
                 <div className="sidebar-actions">
-                      <Tooltip title={'Copy current svg code'}>
+                      <Tooltip title={en.previewArea.copyTooltip}>
                       {/* todo remove outline */}
                         <IconButton onClick={handleCopy} >
                           <ContentCopy fontSize="small" />
@@ -181,7 +182,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
                   </IconButton>
                 </div>
 
-                {/* Сайдбар */}
+                {/* sidebar */}
                 <div
                   className="sidebar"
                   style={{
@@ -195,7 +196,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
                   </div>
                   <div className="preview-buttons">
                     <div>
-                      <div>Zoom:</div>
+                      <div>{en.previewArea.sideMenu.zoom}</div>
                         <Slider
                           style={{
                             width: '100%'
@@ -209,7 +210,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
                         />
                     </div>
                     <div>
-                      <div>Change background:</div>
+                      <div>{en.previewArea.sideMenu.changeBG}</div>
                         <input
                           type="color"
                           ref={inputRef}
@@ -228,7 +229,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
                   </div>
                 </div>
                 <div className="sidebar-fullscreen">
-                      <Tooltip title={isFullScreen ? 'Exit fullscreen' :'Go to fullscreen'}>
+                      <Tooltip title={isFullScreen ? en.previewArea.exitFS : en.previewArea.enterFS}>
                         <IconButton onClick={() => setFullScreen(!isFullScreen)} >
                           {isFullScreen ? 
                             <FullscreenExit/>: 
@@ -240,7 +241,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
               </div>
             {error && (<div className="preview-error">
                 <div className="svg-error">
-                    <p>SVG Parsing Error</p>
+                    <p>{en.previewArea.errorTitle}</p>
                     <div>{error}</div>
                 </div>
               </div>
