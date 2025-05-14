@@ -56,3 +56,4 @@ export const SVG_STUB = `<svg width="400px" height="400px" viewBox="0 0 512 512"
 
 export const UNINSTALL_LINK = 'uninstall-link'// todo fill the link
 export const SERVER_URL = 'uninstall-link'// todo fill the server url
+export const STORAGE_NEED_TO_SHOW_SWITCH_DIALOG = 'needToShowDialog'

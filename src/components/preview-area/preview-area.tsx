@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import './preview-area.css'
 import SvgDownloader from "../svg-downloader/svg-downloader";
-import { IconButton, Slider, Tooltip } from "@mui/material";
+import { IconButton, Slider, Snackbar, SnackbarCloseReason, Tooltip } from "@mui/material";
 import { ContentCopy, Close, Menu, Colorize, Fullscreen, FullscreenExit } from "@mui/icons-material";
 
 
@@ -15,6 +15,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<string | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [showNotification, setShowNotification] = useState(false)
     
     const [position, setPosition] = useState(pos);
     const [isDragging, setIsDragging] = useState(false);
@@ -112,6 +113,7 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
 
 
     const handleCopy = () => {
+      setShowNotification(true)
       navigator.clipboard.writeText(code);
     };
 
@@ -120,9 +122,27 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
       if (Array.isArray(value)) return
       setZoom(value)
     }
+
+    const handleCloseNotification = (
+      _?: React.SyntheticEvent | Event,
+      reason?: SnackbarCloseReason,
+    ) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setShowNotification(false);
+    };
   
     return (
         <div className="preview-wrapper">
+          <Snackbar
+            open={showNotification}
+            autoHideDuration={2000}
+            onClose={handleCloseNotification}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            message="Current SVG code copied to clipboard!"
+          />
             <div className="preview-header">
                 <h2>SVG Preview</h2>
                 <div className="sidebar-actions">

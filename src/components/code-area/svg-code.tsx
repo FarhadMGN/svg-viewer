@@ -3,9 +3,11 @@ import { xml } from '@codemirror/lang-xml';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView } from '@codemirror/view';
 import "./svg-code.css"
-import { Button, styled } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogTitle, styled } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useEffect, useState } from 'react';
+import { storageGet, storageSet } from '../../utils/localStorage';
+import { STORAGE_NEED_TO_SHOW_SWITCH_DIALOG } from '../../utils/constants';
 
 interface CodeEditorProps {
   value: string;
@@ -23,14 +25,26 @@ export interface IconModel {
 export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps) => {
   const [icons, setIcons] = useState<IconModel[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<IconModel | null>(null);
-
-  const handleChange = (val: string) => {
-    onChange(val);
-  };
+  const [nextIcon, setNextIcon] = useState<IconModel | null>(null);
+  const [codeWasChanged, setCodeWasChanged] = useState<boolean>(false);
+  const [dialogOpened, setDialogOpened] = useState<boolean>(false);
 
   useEffect(() => {
     handleFileUpload(files)
   }, [files])
+
+  const handleChange = (val: string) => {
+    onChange(val);
+    setCodeWasChanged(true);
+  };
+
+  const handleClickOpenDialog = () => {
+    setDialogOpened(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpened(false);
+  };
 
   // const [isChrome] = useState(isChromeExtension())
   
@@ -136,8 +150,8 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
       reader.readAsText(file);
     });
   };
-    
-  const clickIcon = (icon: IconModel): void => {
+
+  const switchToAnotherIcon = (icon: IconModel): void => {
     if (selectedIcon) {
       selectedIcon.selected = false;
     }
@@ -145,6 +159,33 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
     setSelectedIcon(icon)
     
     onChange(icon.svgCode)
+    setCodeWasChanged(false)
+  }
+    
+  const clickIcon = (icon: IconModel): void => {
+    storageGet(STORAGE_NEED_TO_SHOW_SWITCH_DIALOG, (val) => {
+      console.log('val >> ', val);
+      
+      if (codeWasChanged && val !== 'false') {
+        setNextIcon(icon)
+        handleClickOpenDialog()
+      } else {
+        switchToAnotherIcon(icon)
+      }
+    })
+    
+  }
+
+  const stayCurrentIcon = () => {
+    handleCloseDialog()
+  }
+
+  const switchAnyway = () => {
+    if (nextIcon) {
+      switchToAnotherIcon(nextIcon)
+    }
+    handleCloseDialog()
+    storageSet(STORAGE_NEED_TO_SHOW_SWITCH_DIALOG, false)
   }
 
   return (
@@ -215,6 +256,22 @@ export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps)
           placeholder="Paste SVG code here, upload file via button or drop .svg file here"
         />
       </div>
+      <Dialog
+        open={dialogOpened}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you want to leave from current svg? Unsaved data will be removed"}
+        </DialogTitle>
+        <DialogActions>
+          <Button type={"submit"} onClick={switchAnyway} autoFocus>
+            Ok, don't show again
+          </Button>
+          <Button onClick={stayCurrentIcon}>Stay here</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
