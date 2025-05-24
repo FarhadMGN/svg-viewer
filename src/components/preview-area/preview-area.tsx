@@ -10,9 +10,10 @@ interface PreviewAreaProps {
     code: string;
     errorString: string | null;
     pos: { x: number, y: number };
+    downloadCB?: () => void;
   }
 
-export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {  
+export const PreviewArea = ({code, errorString, pos, downloadCB}: PreviewAreaProps) => {  
     const containerRef = useRef<HTMLDivElement>(null);
     const [error, setError] = useState<string | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -149,11 +150,11 @@ export const PreviewArea = ({code, errorString, pos}: PreviewAreaProps) => {
                 <div className="sidebar-actions">
                       <Tooltip title={en.previewArea.copyTooltip}>
                       {/* todo remove outline */}
-                        <IconButton onClick={handleCopy} >
+                        <IconButton onClick={handleCopy} aria-label="fingerprint" color="secondary">
                           <ContentCopy fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <SvgDownloader svgContent={code} error={error}/>
+                      <SvgDownloader svgContent={code} error={error} downloadCB={downloadCB}/>
                     </div>
             </div>
               <div className={isFullScreen ? "preview-content-full" : "preview-content"}

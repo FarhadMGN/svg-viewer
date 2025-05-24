@@ -13,6 +13,7 @@ import en from '../../assets/locales/en.json'
 interface CodeEditorProps {
   value: string;
   files: any[];
+  wasDownloaded: boolean;
   onChange: (value: string) => void;
   onError: (error: string | null) => void;
 }
@@ -23,12 +24,18 @@ export interface IconModel {
   selected: boolean;
 }
 
-export const CodeEditor = ({ value, onChange, onError, files }: CodeEditorProps) => {
+export const CodeEditor = ({ value, onChange, onError, files, wasDownloaded }: CodeEditorProps) => {
   const [icons, setIcons] = useState<IconModel[]>([]);
   const [selectedIcon, setSelectedIcon] = useState<IconModel | null>(null);
   const [nextIcon, setNextIcon] = useState<IconModel | null>(null);
   const [codeWasChanged, setCodeWasChanged] = useState<boolean>(false);
   const [dialogOpened, setDialogOpened] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (wasDownloaded) {
+      setCodeWasChanged(false)// todo - check
+    }
+  }, [wasDownloaded])
 
   useEffect(() => {
     handleFileUpload(files)

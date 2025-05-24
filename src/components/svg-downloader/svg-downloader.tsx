@@ -6,9 +6,10 @@ interface SvgDownloaderProps {
     svgContent: string;
     error: string | null;
     fileName?: string;
+    downloadCB?: () => void;
 }
 // todo handle filename
-const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }: SvgDownloaderProps) => {
+const SvgDownloader = ({ svgContent, error, downloadCB, fileName = 'SVG_viewer_result.svg' }: SvgDownloaderProps) => {
   const handleDownload = () => {
     if (!svgContent) return
     // Создаём Blob из строки SVG
@@ -29,6 +30,7 @@ const SvgDownloader = ({ svgContent, error, fileName = 'SVG_viewer_result.svg' }
     // Удаляем ссылку и освобождаем ресурсы
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    downloadCB && downloadCB()
   };
 
   return (

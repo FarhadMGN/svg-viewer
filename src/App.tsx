@@ -15,6 +15,7 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragActive, setDragActive] = useState(false);
+  const [downloaded, setWasDownloaded] = useState(false);
   const [files, setFiles] = useState<any[]>([]);
 
 
@@ -83,9 +84,10 @@ function App() {
           <CodeEditor 
             value={value}
             files={files}
+            wasDownloaded={downloaded}
             onChange={(value: string): void => {updateCode(value)}}
             onError={(error: string | null): void => {setError(error)}}></CodeEditor>
-          <PreviewArea code={value} errorString={error} pos={pos} />
+          <PreviewArea code={value} errorString={error} pos={pos} downloadCB={() => setWasDownloaded(true)}/>
         </div>
 
         <RatingWidget/>
